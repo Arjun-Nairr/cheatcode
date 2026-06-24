@@ -87,7 +87,6 @@ export default function CheatMeal() {
   const [feedback, setFeedback] = useState({});
   const [hadThis, setHadThis] = useState({});
   const [refreshKey, setRefreshKey] = useState(0);
-  const [activeTag, setActiveTag] = useState('all');
   const [historyKey, setHistoryKey] = useState(0);
   const [overrideGate, setOverrideGate] = useState(false);
 
@@ -120,9 +119,6 @@ export default function CheatMeal() {
     setHadThis((prev) => ({ ...prev, [item.id]: true }));
     setHistoryKey((k) => k + 1);
   };
-
-  const allTags = ['all', ...Array.from(new Set(suggestions.map((s) => s.tag)))];
-  const displayed = activeTag === 'all' ? suggestions : suggestions.filter((s) => s.tag === activeTag);
 
   return (
     <div className="page-scroll">
@@ -168,27 +164,12 @@ export default function CheatMeal() {
         </div>
       ) : (
         <>
-          {/* Tag filter */}
-      {allTags.length > 1 && (
-        <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:16 }}>
-          {allTags.map((t) => (
-            <button key={t} onClick={() => setActiveTag(t)} style={{
-              padding:'5px 13px', borderRadius:20, border:'none', cursor:'pointer', fontFamily:'inherit',
-              background: activeTag===t ? (t==='all' ? '#ff6b35' : (TAG_COLOR[t]||'#ff6b35')) : '#1a1a1a',
-              color: activeTag===t ? '#fff' : '#9ca3af', fontSize:12, fontWeight:600,
-              border: `1px solid ${activeTag===t ? 'transparent' : '#2a2a2a'}` }}>
-              {t==='all' ? 'All' : tagLabel(t)}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Suggestion cards */}
-      {displayed.length === 0 ? (
+          {/* Suggestion cards */}
+          {suggestions.length === 0 ? (
         <div style={{ color:'#6b7280', textAlign:'center', paddingTop:40, fontSize:14 }}>No suggestions available right now.</div>
       ) : (
         <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-          {displayed.map((item, idx) => {
+          {suggestions.map((item, idx) => {
             const fb = feedback[item.id];
             const had = hadThis[item.id];
             const tagColor = TAG_COLOR[item.tag] || '#ff6b35';
