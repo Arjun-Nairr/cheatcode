@@ -17,11 +17,11 @@ function formatDate(date) {
 }
 
 export default function Dashboard() {
-  const [date, setDate]     = useState(new Date());
+  const [date, setDate]       = useState(new Date());
   const [profile, setProfile] = useState(null);
-  const [log, setLog]       = useState({ breakfast:[], lunch:[], dinner:[], snacks:[] });
-  const [search, setSearch] = useState(null);
-  const [streak, setStreak] = useState(0);
+  const [log, setLog]         = useState({ breakfast:[], lunch:[], dinner:[], snacks:[] });
+  const [search, setSearch]   = useState(null);
+  const [streak, setStreak]   = useState(0);
 
   const load = useCallback(() => {
     setProfile(getUserProfile());
@@ -58,6 +58,16 @@ export default function Dashboard() {
   const isToday   = dateToKey(date) === dateToKey(new Date());
   const remaining = dailyCal - consumed.calories;
 
+  const motivationalMessage = () => {
+    const pct = dailyCal > 0 ? consumed.calories / dailyCal : 0;
+    if (consumed.calories === 0) return { title: 'Start logging 💪', sub: 'Tap + on any meal to add your first food today.', color: '#fff' };
+    if (remaining < 0)  return { title: 'Over budget', sub: `You're ${Math.abs(remaining)} kcal over. Keep it light for the rest of the day.`, color: '#ef4444' };
+    if (pct >= 0.9)     return { title: 'Almost there!', sub: `Only ${remaining} kcal left — you're nearly at your goal.`, color: '#f59e0b' };
+    if (pct >= 0.5)     return { title: 'Halfway through 🎯', sub: `${remaining} kcal remaining. Keep it up!`, color: '#fff' };
+    return               { title: 'Good start!', sub: `${consumed.calories} kcal logged · ${remaining} kcal still to go.`, color: '#fff' };
+  };
+  const msg = motivationalMessage();
+
   return (
     <div className="page-scroll">
       {/* Header */}
@@ -77,7 +87,7 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-grid">
-        {/* Left */}
+        {/* Left column */}
         <div className="dashboard-left">
           <div className="card" style={{ textAlign:'center', padding:'24px 20px' }}>
             <CalorieRing consumed={consumed.calories} total={dailyCal}/>
@@ -97,14 +107,14 @@ export default function Dashboard() {
           <WeeklyChart target={dailyCal}/>
         </div>
 
-        {/* Right — meals */}
+        {/* Right column — meals + summary strip */}
         <div>
           <div style={{ fontSize:16, fontWeight:700, color:'#fff', marginBottom:12 }}>Meals</div>
           {MEAL_TYPES.map((mt) => {
             const items = log[mt] || [];
             const mealCal = items.reduce((s,i) => s+(i.calories||0), 0);
             return (
-              <div key={mt} className="card">
+              <div key={mt} className="card" style={{ marginBottom:12 }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: items.length ? 12 : 0 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                     <span style={{ fontSize:18 }}>{MEAL_ICONS[mt]}</span>
@@ -139,46 +149,23 @@ export default function Dashboard() {
               </div>
             );
           })}
+
+          {/* Summary strip — sits directly below last meal card, no gap */}
+          {isToday && (
+            <div style={{ display:'flex', gap:12, marginTop:4 }}>
+              <div className="card" style={{ flex:1, textAlign:'center', padding:'16px 12px' }}>
+                <div style={{ fontSize:28 }}>{streak >= 7 ? '🔥' : streak >= 3 ? '⚡' : '🌱'}</div>
+                <div style={{ fontSize:22, fontWeight:800, color:'#ff6b35', lineHeight:1.1, marginTop:4 }}>{streak}</div>
+                <div style={{ fontSize:11, color:'#6b7280', marginTop:2 }}>day streak</div>
+              </div>
+              <div className="card" style={{ flex:3, display:'flex', flexDirection:'column', justifyContent:'center' }}>
+                <div style={{ fontSize:15, fontWeight:700, color: msg.color }}>{msg.title}</div>
+                <div style={{ fontSize:12, color:'#6b7280', marginTop:4 }}>{msg.sub}</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Summary strip */}
-      {isToday && (
-        <div style={{ display:'flex', gap:12, marginTop:20 }}>
-          {/* Streak */}
-          <div className="card" style={{ flex:1, textAlign:'center', padding:'16px 12px' }}>
-            <div style={{ fontSize:28 }}>{streak >= 7 ? '🔥' : streak >= 3 ? '⚡' : '🌱'}</div>
-            <div style={{ fontSize:22, fontWeight:800, color:'#ff6b35', lineHeight:1.1, marginTop:4 }}>{streak}</div>
-            <div style={{ fontSize:11, color:'#6b7280', marginTop:2 }}>day streak</div>
-          </div>
-          {/* Motivational message */}
-          <div className="card" style={{ flex:3, display:'flex', flexDirection:'column', justifyContent:'center' }}>
-            {(() => {
-              const pct = dailyCal > 0 ? consumed.calories / dailyCal : 0;
-              if (consumed.calories === 0) return <>
-                <div style={{ fontSize:15, fontWeight:700, color:'#fff' }}>Start logging 💪</div>
-                <div style={{ fontSize:12, color:'#6b7280', marginTop:4 }}>Tap + on any meal to add your first food today.</div>
-              </>;
-              if (remaining < 0) return <>
-                <div style={{ fontSize:15, fontWeight:700, color:'#ef4444' }}>Over budget</div>
-                <div style={{ fontSize:12, color:'#6b7280', marginTop:4 }}>You're {Math.abs(remaining)} kcal over. Keep it light for the rest of the day.</div>
-              </>;
-              if (pct >= 0.9) return <>
-                <div style={{ fontSize:15, fontWeight:700, color:'#f59e0b' }}>Almost there!</div>
-                <div style={{ fontSize:12, color:'#6b7280', marginTop:4 }}>Only {remaining} kcal left — you're nearly at your goal.</div>
-              </>;
-              if (pct >= 0.5) return <>
-                <div style={{ fontSize:15, fontWeight:700, color:'#fff' }}>Halfway through 🎯</div>
-                <div style={{ fontSize:12, color:'#6b7280', marginTop:4 }}>{remaining} kcal remaining. Keep it up!</div>
-              </>;
-              return <>
-                <div style={{ fontSize:15, fontWeight:700, color:'#fff' }}>Good start!</div>
-                <div style={{ fontSize:12, color:'#6b7280', marginTop:4 }}>{consumed.calories} kcal logged · {remaining} kcal still to go.</div>
-              </>;
-            })()}
-          </div>
-        </div>
-      )}
 
       {search && <FoodSearch mealType={search.mealType} onAdd={(food) => handleAdd(search.mealType, food)} onClose={() => setSearch(null)}/>}
     </div>
