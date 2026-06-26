@@ -70,7 +70,7 @@ export default function Profile() {
         <div style={row}>
           <label style={lbl}>Age</label>
           <input className="input" type="number" min="10" max="100" value={form.age}
-            onChange={(e) => set('age', +e.target.value)} placeholder="18"/>
+            onChange={(e) => set('age', +e.target.value)} onFocus={(e) => e.target.select()} placeholder="18"/>
         </div>
         <div style={row}>
           <label style={lbl}>Gender</label>
@@ -89,12 +89,12 @@ export default function Profile() {
         <div style={row}>
           <label style={lbl}>Height (cm)</label>
           <input className="input" type="number" min="100" max="250" value={form.height}
-            onChange={(e) => set('height', +e.target.value)}/>
+            onChange={(e) => set('height', +e.target.value)} onFocus={(e) => e.target.select()}/>
         </div>
         <div style={row}>
           <label style={lbl}>Weight (kg)</label>
           <input className="input" type="number" min="30" max="300" value={form.weight}
-            onChange={(e) => set('weight', +e.target.value)}/>
+            onChange={(e) => set('weight', +e.target.value)} onFocus={(e) => e.target.select()}/>
         </div>
       </div>
 

@@ -48,7 +48,7 @@ export default function WeeklyChart({ target }) {
   const maxVal = Math.max(...data.map(d => d.consumed), target) * 1.15;
 
   return (
-    <div className="card">
+    <div className="card" style={{ overflow:'hidden' }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
         <div style={{ fontSize:14, fontWeight:700, color:'#fff' }}>This Week</div>
         <div style={{ fontSize:11, color:'#6b7280' }}>
@@ -56,9 +56,10 @@ export default function WeeklyChart({ target }) {
         </div>
       </div>
       <ResponsiveContainer width="100%" height={140}>
-        <BarChart data={data} barCategoryGap="30%" margin={{ top:4, right:4, left:-28, bottom:0 }}>
+        <BarChart data={data} barCategoryGap="30%" margin={{ top:4, right:12, left:-20, bottom:0 }}>
           <XAxis dataKey="label" tick={{ fill:'#6b7280', fontSize:11 }} axisLine={false} tickLine={false}/>
-          <YAxis tick={{ fill:'#6b7280', fontSize:10 }} axisLine={false} tickLine={false} domain={[0, maxVal]}/>
+          <YAxis tick={{ fill:'#6b7280', fontSize:10 }} axisLine={false} tickLine={false} domain={[0, maxVal]}
+            tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(1)}k` : v} width={32}/>
           <Tooltip content={<CustomTooltip/>} cursor={{ fill:'#ffffff08' }}/>
           <ReferenceLine y={target} stroke="#ff6b35" strokeDasharray="4 3" strokeWidth={1.5}/>
           <Bar dataKey="consumed" radius={[5,5,0,0]}>
