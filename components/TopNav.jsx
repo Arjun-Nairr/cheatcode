@@ -31,7 +31,7 @@ export default function TopNav() {
   return (
     <nav className="top-nav">
       <div className="top-nav-inner">
-        <span className="top-nav-logo">🍔 CheatDay</span>
+        <span className="top-nav-logo">🎮 CheatCode</span>
         {TABS.map(({ href, label, Icon }) => {
           const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
           return (

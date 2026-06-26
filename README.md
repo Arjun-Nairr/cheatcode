@@ -1,4 +1,4 @@
-# CheatDay 🍔
+# CheatCode 🍔
 
 A personal calorie tracker with an on-device recommendation engine that learns your fast food preferences through feedback and time-of-day patterns — no backend required.
 

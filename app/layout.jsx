@@ -2,7 +2,7 @@ import './globals.css';
 import TopNav from '../components/TopNav';
 
 export const metadata = {
-  title: 'CheatDay',
+  title: 'CheatCode',
   description: 'Personal calorie tracker',
 };
 
